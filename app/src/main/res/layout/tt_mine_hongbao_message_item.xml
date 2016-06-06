@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.mogujie.tt.ui.widget.message.HongbaoRenderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/default_bk"
+    android:paddingBottom="20dp"
+    android:paddingRight="10dp" >
+
+    <com.mogujie.tt.ui.widget.IMBaseImageView
+        android:id="@+id/user_portrait"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/tt_default_user_portrait_corner" />
+
+    <LinearLayout
+        android:id="@+id/content_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/user_portrait"
+        android:layout_marginLeft="62dp"
+        android:layout_marginRight="6dp"
+        android:layout_toLeftOf="@id/user_portrait"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/message_state_failed"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center_vertical"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/message_image_desc"
+            android:layout_marginRight="8dp"
+            android:src="@drawable/tt_msg_tip"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/progressBar1"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="8dp"
+            android:visibility="gone" />
+
+        <!--<FrameLayout
+            android:id="@+id/message_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/message_state_failed"
+            android:background="@drawable/tt_mine_image_vertical_bk">
+            <com.mogujie.tt.ui.widget.BubbleImageView
+                android:id="@+id/hongbao_image"
+                android:layout_width="80dp"
+                android:layout_height="150dp"
+                android:maxHeight="150dp"
+                android:maxWidth="80dp"
+                android:adjustViewBounds="true"
+                android:padding="0dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/hongbao_envelope"/>
+            <TextView
+                android:id="@+id/message_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="哈哈"
+                android:textColor="#ffffff"
+                android:textSize="17sp"
+                android:textColorLink="#ffffff"
+                />
+        </FrameLayout>-->
+        <LinearLayout
+            android:id="@+id/message_ll"
+            android:layout_width="210dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tt_mine_hongbao_item_bg"
+            android:orientation="vertical"
+            android:weightSum="2.2">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.2">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src= "@drawable/hongbao_logo"
+                    android:layout_gravity="center_vertical"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/message_content"
+                        android:layout_width="170dp"
+                        android:layout_height="wrap_content"
+                        android:text="恭喜发财,大吉大利!"
+                        android:textSize="14sp"
+                        android:textColor="#ffffff"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="领取红包"
+                        android:textSize="12sp"
+                        android:textColor="#ffffff"/>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_weight="1">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="7dp"
+                    android:text="微杏红包"
+                    android:textSize="10sp"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
+        </LinearLayout>
+
+</com.mogujie.tt.ui.widget.message.HongbaoRenderView>

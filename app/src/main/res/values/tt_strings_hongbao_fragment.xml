@@ -1,0 +1,27 @@
+<resources>
+
+    <string name="give_hongbao">发红包</string>
+    <string name="lucky_hongbao">拼手气红包</string>
+    <string name="normal_hongbao">普通红包</string>
+    <string name="command_hongbao">口令红包</string>
+    <string name="hongbao_num">红包个数</string>
+    <string name="hongbao_sum">总金额</string>
+    <string name="hongbao_hint">小伙伴领取的金额随机</string>
+    <string name="hongbao_edit_hint">恭喜发财</string>
+    <string name="hongbao_sum_edit_hint">输入金额</string>
+    <string name="saiqian">塞钱</string>
+    <string name="piece">个</string>
+    <string name="yuan">元</string>
+    <string name= "hongbao_balance">当前余额</string>
+    <string name= "importGroup">导入群组名称</string>
+    <string name="hongbao_send_hint">发了一个红包，金额随机</string>
+    <string name="hongbao_receive_detail">看看大家的手气></string>
+    <string name="hongbao_detail">红包详情</string>
+    <string name="hongbao_good_luck">手气最佳</string>
+    <string name="hongbao_record">查看我的红包记录</string>
+    <string name="hongbao_num_hint">个红包共</string>
+    <string name="hongbao_yuan_hint">元，</string>
+    <string name="hongbao_receive_time_hint">秒被抢光</string>
+    <string name="hongbao_receive_mine">收到的红包</string>
+    <string name="hongbao_receive_mine_hint">收到红包</string>
+</resources>

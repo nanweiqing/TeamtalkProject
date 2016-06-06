@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "1073577994996",
+    "project_id": "nanweiqing"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073577994996:android:502436784d01c8cd",
+        "android_client_info": {
+          "package_name": "com.mogujie.tt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhADJ5_ICEMKnd3Ob66MfJm1lbfF6WhYE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-78652321-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
