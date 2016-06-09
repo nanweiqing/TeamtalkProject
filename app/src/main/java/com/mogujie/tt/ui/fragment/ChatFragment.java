@@ -24,6 +24,7 @@ import com.mogujie.tt.config.DBConstant;
 import com.mogujie.tt.DB.entity.GroupEntity;
 import com.mogujie.tt.DB.entity.UserEntity;
 import com.mogujie.tt.R;
+import com.mogujie.tt.config.SysConstant;
 import com.mogujie.tt.imservice.manager.IMSessionManager;
 import com.mogujie.tt.protobuf.helper.EntityChangeEngine;
 import com.mogujie.tt.ui.adapter.ChatAdapter;
@@ -47,6 +48,7 @@ import com.mogujie.tt.utils.NetworkUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -76,6 +78,10 @@ public class ChatFragment extends MainFragment
     private ProgressBar reconnectingProgressBar;
     private IMService imService;
     private PtrClassicFrameLayout mPtrFrame;
+
+    private IMSessionManager imSessionManager = IMSessionManager.instance();
+    //显示的最近会话列表(会不停增长，每次上拉加载些，此list就增加些数据)
+    private List<RecentInfo> uiRecentSeesionList = new ArrayList<>();
 
     //是否是手动点击重练。fasle:不显示各种弹出小气泡. true:显示小气泡直到错误出现
     private volatile boolean isManualMConnect = false;
@@ -146,19 +152,7 @@ public class ChatFragment extends MainFragment
 
             @Override
             public void onLoadMoreBegin(PtrFrameLayout frame) {
-                Toast.makeText(getActivity(), "开始加载更多", Toast.LENGTH_SHORT).show();
-
-                IMSessionManager imSessionManager = imService.getSessionManager();
-                int offset = imSessionManager.getOffset();
-                imSessionManager.setOffset(offset++);
-                imService.getSessionManager().onLoadMore(imSessionManager.getOffset());
-
-                /*mPtrFrame.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mPtrFrame.refreshComplete();
-                    }
-                }, 1000);*/
+                imService.getSessionManager().onLoadMore();
             }
 
             @Override
@@ -267,6 +261,10 @@ public class ChatFragment extends MainFragment
             case SET_SESSION_TOP:
                 onRecentContactDataReady();
                 break;
+            case RECENT_SESSION_LIST_MORE:
+                onLoadMore();
+                break;
+
         }
     }
 
@@ -482,7 +480,7 @@ public class ChatFragment extends MainFragment
     /**
      * 这个处理有点过于粗暴
      */
-    private void onRecentContactDataReady() {
+    private void onRecentContactDataReady(String... sessionKey) {
         boolean isUserData = imService.getContactManager().isUserDataReady();
         boolean isSessionData = imService.getSessionManager().isSessionListReady();
         boolean isGroupData =  imService.getGroupManager().isGroupReady();
@@ -500,12 +498,66 @@ public class ChatFragment extends MainFragment
         for(int i = 0;i < recentSessionList.size();i++){
             logger.d("最近会话列表:"+recentSessionList.get(i).getLatestMsgData());
         }
-        setNoChatView(recentSessionList);
-        contactAdapter.setData(recentSessionList);
+
+        /*int start = 0;
+        List<RecentInfo> selectRecentSeesionList = recentSessionList.subList(start, start + SysConstant.SESSION_CNT_PER_PAGE);*/
+        List<RecentInfo> selectRecentSeesionList = null;
+        if(uiRecentSeesionList.size() == 0){
+            int start = 0;
+            selectRecentSeesionList = recentSessionList.subList(start, start + SysConstant.SESSION_CNT_PER_PAGE);
+            uiRecentSeesionList.addAll(selectRecentSeesionList);
+            logger.d("最近会话列表界面上被添加到了列表");
+            /*int offset = imSessionManager.getOffset();
+            imSessionManager.setOffset(offset++);*/
+        }else{
+            uiRecentSeesionList = recentSessionList.subList(0,uiRecentSeesionList.size());
+        }
+
+
+
+        //当显示的列表的第一项与从缓存中取出的列表第一项不一致，表明此时可能收到了消息，或者自己发了消息
+        //这时应该将uiRecentSeesionList的前面和recentSessionList的前面弄成一致，才代表了正确的更新了UI
+        /*if(!uiRecentSeesionList.get(0).equals(recentSessionList.get(0))){
+            int i = recentSessionList.indexOf(uiRecentSeesionList.get(uiRecentSeesionList.size()-1));
+//            selectRecentSeesionList = recentSessionList.subList(0, i+1);
+            uiRecentSeesionList = recentSessionList.subList(0, i+1);
+        }
+        //当判断相等时，其实只是说是同一个会话，但不代表是同一条消息，因为消息内容可能不一致，之前的判断相等只是代表是同一个会话
+        else{
+            if(!uiRecentSeesionList.get(0).getLatestMsgData().equals
+                    (recentSessionList.get(0).getLatestMsgData())){
+                uiRecentSeesionList.remove(0);
+                uiRecentSeesionList.add(0,recentSessionList.get(0));
+            }
+            //当消息内容相等时，再根据是否此消息未读来决定是否将界面上显示的list对应条目替换掉
+            else{
+                uiRecentSeesionList.remove(0);
+                uiRecentSeesionList.add(0,recentSessionList.get(0));
+            }
+        }*/
+
+
+        setNoChatView(uiRecentSeesionList);
+        contactAdapter.setData(uiRecentSeesionList);
         hideProgressBar();
         showSearchFrameLayout();
-
-        if(mPtrFrame.isPullToRefresh()){
+    }
+    private void onLoadMore(){
+        List<RecentInfo> recentSessionList = imService.getSessionManager().getRecentListInfo();
+        int start = uiRecentSeesionList.size();
+        if(start >= recentSessionList.size()){
+            if(mPtrFrame.isRefreshing()){
+                mPtrFrame.refreshComplete();
+            }
+            Toast.makeText(getActivity(), "没有更多数据了", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        List<RecentInfo> selectRecentSeesionList = recentSessionList.subList(start, start+SysConstant.SESSION_CNT_PER_PAGE);
+        if(!uiRecentSeesionList.containsAll(selectRecentSeesionList)){
+            uiRecentSeesionList.addAll(selectRecentSeesionList);
+        }
+        contactAdapter.setData(uiRecentSeesionList);
+        if(mPtrFrame.isRefreshing()){
             mPtrFrame.refreshComplete();
         }
     }

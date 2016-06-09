@@ -24,13 +24,20 @@ import android.widget.Toast;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.gson.Gson;
 import com.mogujie.tt.DB.sp.LoginSp;
 import com.mogujie.tt.DB.sp.SystemConfigSp;
 import com.mogujie.tt.R;
 import com.mogujie.tt.app.IMApplication;
 import com.mogujie.tt.config.IntentConstant;
-import com.mogujie.tt.config.MessageConstant;
+import com.mogujie.tt.config.SysConstant;
 import com.mogujie.tt.config.UrlConstant;
+import com.mogujie.tt.net.request.GetFriendListReqBody;
+import com.mogujie.tt.net.request.MsgHeader;
+import com.mogujie.tt.net.response.FriendDetailInfo;
+import com.mogujie.tt.net.response.GetFriendListResp;
+import com.mogujie.tt.net.response.GetFriendListRespBody;
+import com.mogujie.tt.utils.EncryUtil;
 import com.mogujie.tt.utils.IMUIHelper;
 import com.mogujie.tt.imservice.event.LoginEvent;
 import com.mogujie.tt.imservice.event.SocketEvent;
@@ -39,8 +46,16 @@ import com.mogujie.tt.imservice.service.IMService;
 import com.mogujie.tt.ui.base.TTBaseActivity;
 import com.mogujie.tt.imservice.support.IMServiceConnector;
 import com.mogujie.tt.utils.Logger;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.Request;
 
 
 /**
@@ -231,10 +246,87 @@ public class LoginActivity extends TTBaseActivity {
             public void onClick(View view) {
                 intputManager.hideSoftInputFromWindow(mPasswordView.getWindowToken(), 0);
                 attemptLogin();
+
+                /*String jsonTest = "{\"msgHeader\":{\"serviceCode\":\"IM003\",\"version\":\"1.0\",\"sysPlatCode\":\"1\",\"sentTime\":\"2016-05-29 09:54:02\",\"expTime\":\"\",\"sMessageNo\":\"BBS000201605290954020214\"},\"msgBody\":{\"userId\":\"2\",\"countNum\":\"4\",\"startNum\":\"1\",\"endNum\":\"49\",\"Datas\":[{\"refId\":\"2\",\"fUserId\":\"3\",\"fUserName\":\"w\",\"fNickName\":\"W\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"3\",\"fUserId\":\"4\",\"fUserName\":\"e\",\"fNickName\":\"E\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"4\",\"fUserId\":\"5\",\"fUserName\":\"r\",\"fNickName\":\"R\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"5\",\"fUserId\":\"6\",\"fUserName\":\"t\",\"fNickName\":\"T\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"6\",\"fUserId\":\"7\",\"fUserName\":\"y\",\"fNickName\":\"Y\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"7\",\"fUserId\":\"8\",\"fUserName\":\"u\",\"fNickName\":\"U\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"8\",\"fUserId\":\"9\",\"fUserName\":\"i\",\"fNickName\":\"I\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"9\",\"fUserId\":\"10\",\"fUserName\":\"o\",\"fNickName\":\"O\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"10\",\"fUserId\":\"11\",\"fUserName\":\"p\",\"fNickName\":\"P\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"11\",\"fUserId\":\"12\",\"fUserName\":\"l\",\"fNickName\":\"L\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"12\",\"fUserId\":\"13\",\"fUserName\":\"k\",\"fNickName\":\"K\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"13\",\"fUserId\":\"14\",\"fUserName\":\"j\",\"fNickName\":\"J\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"14\",\"fUserId\":\"15\",\"fUserName\":\"h\",\"fNickName\":\"H\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"15\",\"fUserId\":\"16\",\"fUserName\":\"g\",\"fNickName\":\"G\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"16\",\"fUserId\":\"17\",\"fUserName\":\"f\",\"fNickName\":\"F\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"17\",\"fUserId\":\"18\",\"fUserName\":\"d\",\"fNickName\":\"D\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"18\",\"fUserId\":\"19\",\"fUserName\":\"s\",\"fNickName\":\"S\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"}]}}";
+                GetFriendListResp getFriendListResp = new Gson().fromJson(jsonTest, GetFriendListResp.class);
+                GetFriendListRespBody getFriendListRespBody = getFriendListResp.getGetFriendListRespBody();
+                int i = getFriendListRespBody.getEndNum();
+                logger.d("响应成功,end值为:"+ i);
+                List<FriendDetailInfo> friendDetailInfoList = getFriendListRespBody.getDatas();
+                logger.d("响应成功,list为:"+ friendDetailInfoList.get(0).getfNickName());
+
+                MsgHeader msgHeader = new MsgHeader("IM003","1.0","1","2016-05-29 09:54:02","",
+                        "BBS000201605290954020214");
+                GetFriendListReqBody getFriendListReqBody = new GetFriendListReqBody("1","1","50");
+                String body = new Gson().toJson(getFriendListReqBody).toString();
+                logger.d("body为:"+body);
+
+                String header = new Gson().toJson(msgHeader).toString();
+                logger.d("header为:"+header);
+
+                String exmMingwen = "{\"msgHeader\":"+header+",\"msgBody\":"+body+"}";
+                logger.d("加密前的明文为:"+exmMingwen);
+
+                String b = EncryUtil.encrypt(body, SysConstant.key);
+
+                String exm = "{\"msgHeader\":"+header+",\"msgBody\":\""+b+"\"}";
+                logger.d("加密后的暗文为:"+exm);
+
+                try {
+                    OkHttpUtils.postString().url(UrlConstant.URL_HOST_ADDRESS)
+                            .content(exm).build().execute(new MyStringCallback());
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }*/
             }
         });
         initAutoLogin();
     }
+
+
+    public class MyStringCallback extends StringCallback
+    {
+        @Override
+        public void onBefore(Request request)
+        {
+            super.onBefore(request);
+            logger.d("响应before:"+request.toString());
+        }
+
+        @Override
+        public void onAfter()
+        {
+            super.onAfter();
+            logger.d("响应after");
+        }
+
+        @Override
+        public void onError(Call call, Exception e)
+        {
+            e.printStackTrace();
+            logger.d("响应失败:"+e.getMessage());
+        }
+
+        @Override
+        public void onResponse(String response)
+        {
+            logger.d("响应成功:"+response);
+//            String a = {"msgHeader":{"serviceCode":"IM003","version":"1.0","sysPlatCode":"BBS","sentTime":"2016-05-2909:54:02","expTime":"","sMessageNo":"BBS000201605290954020214"},"msgBody":{"userId":"IM0032016052415501119422","countNum":"2","startNum":"1","endNum":"50","Datas":[{"refId":"000000111","fUserId":"122222","fUserName":"1","fNickName":"成功","fSignature":"0000001","fUserIcon":"1","fIntro":"123成功","fCreateTime":"2016-05-2410:33:45"},{"refId":"000000112","fUserId":"2222212","fUserName":"1","fNickName":"aa","fSignature":"0000001","fUserIcon":"1","fIntro":"a","fCreateTime":"2016-05-2410:33:45"}]}}
+
+            GetFriendListResp getFriendListResp = new Gson().fromJson(response, GetFriendListResp.class);
+            GetFriendListRespBody getFriendListRespBody = getFriendListResp.getGetFriendListRespBody();
+            int i = getFriendListRespBody.getEndNum();
+            logger.d("响应成功,end值为:"+ i);
+            List<FriendDetailInfo> friendDetailInfoList = getFriendListRespBody.getDatas();
+            logger.d("响应成功,list为:"+ friendDetailInfoList.get(0).getfNickName());
+        }
+
+        @Override
+        public void inProgress(float progress)
+        {
+        }
+    }
+
 
     private void initAutoLogin() {
         logger.i("login#initAutoLogin");

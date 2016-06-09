@@ -12,6 +12,9 @@ public enum  SessionEvent {
    //回话人列表更新
    RECENT_SESSION_LIST_UPDATE,
 
-   SET_SESSION_TOP
+   SET_SESSION_TOP,
+
+   //回话人列表加载更多
+   RECENT_SESSION_LIST_MORE
 
 }

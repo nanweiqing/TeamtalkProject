@@ -194,4 +194,28 @@ public class RecentInfo {
     {
         this.isForbidden = isForbidden;
     }
+
+
+    //&& this.getLatestMsgData().equals(recentInfo.getLatestMsgData())
+    @Override
+    public boolean equals(Object o) {
+        if(o == null){
+            return  false;
+        }else{
+            if(this.getClass() == o.getClass()){
+                RecentInfo recentInfo = (RecentInfo) o;
+                if(this.getName().equals(recentInfo.getName())
+                        && this.getPeerId() == recentInfo.getPeerId()
+                        && this.getSessionType() == recentInfo.getSessionType()
+                        && this.getSessionKey() == recentInfo.getSessionKey()
+                        ){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }
+    }
 }

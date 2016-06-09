@@ -56,5 +56,8 @@ public interface SysConstant {
     public static final int MSG_CNT_PER_PAGE = 18;
 
     //recentSession(最近会话列表) 每次拉取的条数
-    public static final int SESSION_CNT_PER_PAGE = 2;
+    public static final int SESSION_CNT_PER_PAGE = 1;
+
+    //发送网络请求消息加密的key
+    public static String key = "32ousdjf9343djjomvsdf2233dskdlfd";
 }

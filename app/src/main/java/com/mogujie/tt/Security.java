@@ -1,5 +1,7 @@
 package com.mogujie.tt;
 
+import java.io.UnsupportedEncodingException;
+
 public class Security {
 	
 	public native byte[] DecryptMsg(String strMsg);

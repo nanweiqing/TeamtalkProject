@@ -10,10 +10,15 @@ public class UnreadEvent {
 
     public UnreadEntity entity;
     public Event event;
+    public String sessionKey;
 
     public UnreadEvent(){}
     public UnreadEvent(Event e){
         this.event = e;
+    }
+    public UnreadEvent(Event e,String sessionKey){
+        this.event = e;
+        this.sessionKey = sessionKey;
     }
 
     public enum Event {

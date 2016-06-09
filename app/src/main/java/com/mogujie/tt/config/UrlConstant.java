@@ -13,4 +13,7 @@ public class UrlConstant {
     // access 地址
     public final static String ACCESS_MSG_ADDRESS = "http://10.72.50.44:8080/msg_server";
 
+    //网络请求url地址
+    public final static String URL_HOST_ADDRESS = "http://10.72.50.33:8099/imface/service/b2p";
+
 }

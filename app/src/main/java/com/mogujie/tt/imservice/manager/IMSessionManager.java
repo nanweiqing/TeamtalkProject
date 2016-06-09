@@ -114,16 +114,20 @@ public class IMSessionManager extends IMManager {
         reqGetRecentContacts(latestUpdateTime);
     }
 
-    public void onLoadMore(int offset){
+    public void onLoadMore(){
         logger.i("session#loadFromDb");
-        List<SessionEntity>  sessionInfoList = dbInterface.loadSessionByCount(offset * SysConstant.SESSION_CNT_PER_PAGE);
+        offset++;
+        triggerEvent(SessionEvent.RECENT_SESSION_LIST_MORE);
+        /*List<SessionEntity>  sessionInfoList = dbInterface.loadSessionByCount(offset * SysConstant.SESSION_CNT_PER_PAGE);
         if(sessionInfoList.size() <= 0){
             return;
         }
         for(SessionEntity sessionInfo:sessionInfoList){
             sessionMap.put(sessionInfo.getSessionKey(), sessionInfo);
         }
-        triggerEvent(SessionEvent.RECENT_SESSION_LIST_SUCCESS);
+        triggerEvent(SessionEvent.RECENT_SESSION_LIST_SUCCESS);*/
+
+
     }
 
     /**----------------------------分割线--------------------------------*/
@@ -365,6 +369,56 @@ public class IMSessionManager extends IMManager {
         return recentSessionList;
     }
 
+
+    //根据每页显示的个数来展示
+    public List<RecentInfo> getRecentListInfoByPage(int offset){
+        /**整理topList*/
+        List<RecentInfo> recentSessionList = new ArrayList<>();
+        int loginId = IMLoginManager.instance().getLoginId();
+
+        List<SessionEntity> sessionList = getRecentSessionList();
+        Map<Integer,UserEntity> userMap = IMContactManager.instance().getUserMap();
+        Map<String,UnreadEntity> unreadMsgMap = IMUnreadMsgManager.instance().getUnreadMsgMap();
+        Map<Integer,GroupEntity> groupEntityMap = IMGroupManager.instance().getGroupMap();
+        HashSet<String> topList = ConfigurationSp.instance(ctx,loginId).getSessionTopList();
+
+
+        for(SessionEntity recentSession:sessionList){
+            int sessionType = recentSession.getPeerType();
+            int peerId = recentSession.getPeerId();
+            String sessionKey = recentSession.getSessionKey();
+
+            UnreadEntity unreadEntity = unreadMsgMap.get(sessionKey);
+            if(sessionType == DBConstant.SESSION_TYPE_GROUP){
+                GroupEntity groupEntity = groupEntityMap.get(peerId);
+                RecentInfo recentInfo = new RecentInfo(recentSession,groupEntity,unreadEntity);
+                if(topList !=null && topList.contains(sessionKey)){
+                    recentInfo.setTop(true);
+                }
+
+                //谁说的这条信息，只有群组需要，例如 【XXX:您好】
+                int lastFromId = recentSession.getTalkId();
+                UserEntity talkUser = userMap.get(lastFromId);
+                // 用户已经不存在了
+                if(talkUser !=null){
+                    String  oriContent =  recentInfo.getLatestMsgData();
+                    String  finalContent = talkUser.getMainName() + ": "+oriContent;
+                    recentInfo.setLatestMsgData(finalContent);
+                }
+                recentSessionList.add(recentInfo);
+            }else if(sessionType == DBConstant.SESSION_TYPE_SINGLE){
+                UserEntity userEntity = userMap.get(peerId);
+                RecentInfo recentInfo = new RecentInfo(recentSession,userEntity,unreadEntity);
+                if(topList !=null && topList.contains(sessionKey)){
+                    recentInfo.setTop(true);
+                }
+                recentSessionList.add(recentInfo);
+            }
+        }
+        sort(recentSessionList);
+        List<RecentInfo> selectSessionList = recentSessionList.subList(offset * SysConstant.SESSION_CNT_PER_PAGE , SysConstant.SESSION_CNT_PER_PAGE);
+        return selectSessionList;
+    }
 
     public SessionEntity findSession(String sessionKey){
         if(sessionMap.size()<=0 || TextUtils.isEmpty(sessionKey)){return null;}

@@ -261,7 +261,8 @@ public class IMUnreadMsgManager extends IMManager {
          if(unreadMsgMap.containsKey(sessionKey)){
              UnreadEntity entity = unreadMsgMap.remove(sessionKey);
              ackReadMsg(entity);
-             triggerEvent(new UnreadEvent(UnreadEvent.Event.SESSION_READED_UNREAD_MSG));
+//             triggerEvent(new UnreadEvent(UnreadEvent.Event.SESSION_READED_UNREAD_MSG));
+             triggerEvent(new UnreadEvent(UnreadEvent.Event.SESSION_READED_UNREAD_MSG,sessionKey));
          }
     }
 
