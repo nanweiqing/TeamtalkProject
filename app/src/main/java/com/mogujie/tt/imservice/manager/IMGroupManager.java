@@ -197,6 +197,12 @@ public class IMGroupManager extends IMManager {
         }
     }
 
+    //通过http请求来获取群用户的详细信息
+    public void reqGroupDetailInfoByHttp(int groupId) {
+
+
+    }
+
     public void  reqGroupDetailInfo(int groupId){
         IMBaseDefine.GroupVersionInfo groupVersionInfo = IMBaseDefine.GroupVersionInfo.newBuilder()
                 .setGroupId(groupId)

@@ -28,9 +28,11 @@ public class GreenDaoGenerator {
         addGroupInfo(schema);
         addMessage(schema);
         addSessionInfo(schema);
+        addGroupUserInfo(schema);
 
         // todo 绝对路径,根据自己的路径设定， 例子如下
-        String path = "/Users/yingmu/software/IM/TT/ttandroidclientnew/app/src/main/java";
+//        String path = "/Users/yingmu/software/IM/TT/ttandroidclientnew/app/src/main/java";
+        String path = "E:/teamtalkproject/android/app/src/main/java-gen";
         new DaoGenerator().generateAll(schema, path);
     }
 
@@ -59,7 +61,7 @@ public class GreenDaoGenerator {
         userInfo.setJavaPackage(entityPath);
 
         userInfo.addIdProperty().autoincrement();
-        userInfo.addIntProperty("peerId").unique().notNull().index();
+        userInfo.addLongProperty("peerId").unique().notNull().index();
         userInfo.addIntProperty("gender").notNull();
         userInfo.addStringProperty("mainName").notNull();
         // 这个可以自动生成pinyin
@@ -156,5 +158,30 @@ public class GreenDaoGenerator {
         sessionInfo.addIntProperty("updated").notNull();
 
         sessionInfo.setHasKeepSections(true);
+    }
+
+    //添加群用户数据表
+    private static void addGroupUserInfo(Schema schema){
+        Entity groupUserInfo = schema.addEntity("GroupUserEntity");
+        groupUserInfo.setTableName("GroupUser");
+        groupUserInfo.setClassNameDao("GroupUserDao");
+        groupUserInfo.setJavaPackage(entityPath);
+
+        groupUserInfo.addIdProperty().autoincrement();
+        groupUserInfo.addLongProperty("peerId").unique().notNull(); //.unique()
+        groupUserInfo.addStringProperty("userName").notNull();
+        groupUserInfo.addStringProperty("nickName").notNull();
+
+        groupUserInfo.addStringProperty("userIcon").notNull();
+        groupUserInfo.addStringProperty("signature").notNull();
+        groupUserInfo.addStringProperty("intro").notNull();
+        groupUserInfo.addStringProperty("gender").notNull();
+
+        groupUserInfo.addIntProperty("createTime").notNull();
+        groupUserInfo.addIntProperty("joinTime").notNull();
+        groupUserInfo.addStringProperty("role").notNull();
+        groupUserInfo.addStringProperty("joinType").notNull();
+
+        groupUserInfo.setHasKeepSections(true);
     }
 }

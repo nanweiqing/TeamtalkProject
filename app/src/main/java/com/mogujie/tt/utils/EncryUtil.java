@@ -47,7 +47,7 @@ public class EncryUtil {
         }
     }
 
-    public static String drc4(String key, byte[] bytes) throws UnsupportedEncodingException {
+    private static String drc4(String key, byte[] bytes) throws UnsupportedEncodingException {
         RC4Engine engine = new RC4Engine();
         CipherParameters parameters = new KeyParameter(key.getBytes("utf-8"));
         engine.init(false, parameters);

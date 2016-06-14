@@ -2,6 +2,7 @@
 package com.mogujie.tt.ui.fragment;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,6 +26,7 @@ import com.mogujie.tt.DB.entity.GroupEntity;
 import com.mogujie.tt.DB.entity.UserEntity;
 import com.mogujie.tt.R;
 import com.mogujie.tt.config.SysConstant;
+import com.mogujie.tt.imservice.event.SessionDeleteEvent;
 import com.mogujie.tt.imservice.manager.IMSessionManager;
 import com.mogujie.tt.protobuf.helper.EntityChangeEngine;
 import com.mogujie.tt.ui.adapter.ChatAdapter;
@@ -157,13 +159,8 @@ public class ChatFragment extends MainFragment
 
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
-                Toast.makeText(getActivity(), "开始刷新", Toast.LENGTH_SHORT).show();
-                mPtrFrame.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mPtrFrame.refreshComplete();
-                    }
-                }, 1000);
+                //Todo，刷新时 1要刷新最近的会话列表，2.要检测 涉及到群的 强制踢人条件
+                imSessionManager.onLocalNetOk();
             }
 
         });
@@ -250,7 +247,17 @@ public class ChatFragment extends MainFragment
             logger.e("recent#null recentInfo -> position:%d", position);
             return;
         }
-       IMUIHelper.openChatActivity(getActivity(),recentInfo.getSessionKey());
+        /**
+         * Todo,在进入消息界面时，先检查强制退群判断，如果满足强制退群，则还停留在最近会话界面,并刷新会话列表，
+         * 如果不满足退群条件，则进入消息界面
+         */
+        if((System.currentTimeMillis() - recentInfo.getUpdateTime()) >= 60*60*1000){
+            imSessionManager.terminateRelation(recentInfo.getSessionKey());
+            imSessionManager.triggerEvent(new SessionDeleteEvent(recentInfo));
+        }else{
+            IMUIHelper.openChatActivity(getActivity(),recentInfo.getSessionKey());
+        }
+
     }
 
     public void onEventMainThread(SessionEvent sessionEvent){
@@ -263,9 +270,19 @@ public class ChatFragment extends MainFragment
                 break;
             case RECENT_SESSION_LIST_MORE:
                 onLoadMore();
+            case RECENT_SESSION_LIST_PULL_DOWN:
+                if(mPtrFrame.isRefreshing()){
+                mPtrFrame.refreshComplete();
+                }
                 break;
 
         }
+    }
+
+    public void onEventMainThread(SessionDeleteEvent sessionDeleteEvent) {
+        RecentInfo recentInfo = sessionDeleteEvent.getRecentInfo();
+        uiRecentSeesionList.remove(recentInfo);
+        onRecentContactDataReady();
     }
 
     public void onEventMainThread(GroupEvent event){
@@ -504,7 +521,11 @@ public class ChatFragment extends MainFragment
         List<RecentInfo> selectRecentSeesionList = null;
         if(uiRecentSeesionList.size() == 0){
             int start = 0;
-            selectRecentSeesionList = recentSessionList.subList(start, start + SysConstant.SESSION_CNT_PER_PAGE);
+            if(recentSessionList.size() >= (start + SysConstant.SESSION_CNT_PER_PAGE)){
+                selectRecentSeesionList = recentSessionList.subList(start, start + SysConstant.SESSION_CNT_PER_PAGE);
+            }else{
+                selectRecentSeesionList = recentSessionList.subList(start, recentSessionList.size());
+            }
             uiRecentSeesionList.addAll(selectRecentSeesionList);
             logger.d("最近会话列表界面上被添加到了列表");
             /*int offset = imSessionManager.getOffset();
@@ -536,11 +557,15 @@ public class ChatFragment extends MainFragment
             }
         }*/
 
-
         setNoChatView(uiRecentSeesionList);
         contactAdapter.setData(uiRecentSeesionList);
         hideProgressBar();
         showSearchFrameLayout();
+
+        //当有数据更新时，假如正在刷新，则刷新完成
+        if(mPtrFrame.isRefreshing()){
+            mPtrFrame.refreshComplete();
+        }
     }
     private void onLoadMore(){
         List<RecentInfo> recentSessionList = imService.getSessionManager().getRecentListInfo();

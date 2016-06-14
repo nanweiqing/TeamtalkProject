@@ -11,9 +11,9 @@ import java.util.List;
  */
 public class GetFriendListResp {
     private MsgHeader msgHeader;
-    private GetFriendListRespBody msgBody;
-
-    public GetFriendListResp(MsgHeader msgHeader, GetFriendListRespBody getFriendListRespBody) {
+//    private GetFriendListRespBody msgBody;
+    private String msgBody;
+    public GetFriendListResp(MsgHeader msgHeader, String getFriendListRespBody) {
         this.msgHeader = msgHeader;
         this.msgBody = getFriendListRespBody;
     }
@@ -26,11 +26,11 @@ public class GetFriendListResp {
         this.msgHeader = msgHeader;
     }
 
-    public GetFriendListRespBody getGetFriendListRespBody() {
+    public String getGetFriendListRespBody() {
         return msgBody;
     }
 
-    public void setGetFriendListRespBody(GetFriendListRespBody getFriendListRespBody) {
+    public void setGetFriendListRespBody(String getFriendListRespBody) {
         this.msgBody = getFriendListRespBody;
     }
 }

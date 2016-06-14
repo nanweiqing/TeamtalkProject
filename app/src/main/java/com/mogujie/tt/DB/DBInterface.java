@@ -3,6 +3,7 @@ package com.mogujie.tt.DB;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.mogujie.tt.DB.dao.DaoMaster;
@@ -235,6 +236,13 @@ public class DBInterface {
         dao.insertOrReplaceInTx(entityList);
     }
 
+    //根据Session里面的peerId删除GroupInfo表中的对应群 (peerId对应一个session)
+    public void deleteGroupByPeerId(int peerId) {
+        GroupDao dao = openWritableDb().getGroupDao();
+        int i = dao.getDatabase().delete("GroupInfo", "PEER_ID = ?", new String[]{String.valueOf(peerId)});
+        logger.d("删除GroupInfo中对应peerId的id为:"+i);
+    }
+
     /**-------------------------下面开始session 操作相关---------------------------------------*/
     /**
      * 载入session 表中的所有数据
@@ -311,6 +319,24 @@ public class DBInterface {
         return timeLine;
     }
 
+    public int getPeerIdBySessionKey(String session_key) {
+        int peerId = 0;
+        SessionDao sessionDao =  openWritableDb().getSessionDao();
+        String sql = "select PEER_ID from Session where SESSION_KEY = ?";
+        Cursor cursor =  sessionDao.getDatabase().rawQuery(sql,new String[]{session_key});
+        try {
+            if(cursor!=null && cursor.getCount() ==1){
+                cursor.moveToFirst();
+                peerId = cursor.getInt(0);
+            }
+        }catch (Exception e){
+            logger.e("DBInterface#getPeerId cursor 查询异常");
+        }finally {
+            cursor.close();
+        }
+        return peerId;
+    }
+
     /**-------------------------下面开始message 操作相关---------------------------------------*/
 
     // where (msgId >= startMsgId and msgId<=lastMsgId) or
@@ -333,6 +359,46 @@ public class DBInterface {
                     .list();
 
         return formatMessage(listMsg);
+    }
+
+
+    //判断登录的用户 所在的群 根据其入群类型(是否红包加入)是否长时间未说话并决定是否退群
+    public boolean exitGroup(long userId) {
+        MessageDao dao = openReadableDb().getMessageDao();
+        int timeLine = 0;
+//        String sql = "select * from Message where FROM_ID=? order by CREATED desc limit 1";
+//        List<MessageEntity> messageEntityList = dao.queryRaw("where FROM_ID=? order by CREATED desc limit 1", new String[]{String.valueOf(userId)});
+
+        String sql = "select CREATED from Message where FROM_ID=? order by CREATED desc limit 1";
+        Cursor cursor =  dao.getDatabase().rawQuery(sql, new String[]{String.valueOf(userId)});
+        try {
+            if(cursor!=null && cursor.getCount() ==1){
+                cursor.moveToFirst();
+                timeLine = cursor.getInt(0);
+            }
+        }catch (Exception e){
+            logger.e("DBInterface#exitGroup cursor 查询异常");
+        }finally {
+            cursor.close();
+        }
+
+        logger.d("查询的最近一次发言时间为:"+timeLine);
+
+        /*String sql = "select created from Message where status=? order by created desc limit 1";
+        Cursor cursor =  messageDao.getDatabase().rawQuery(sql, new String[]{successType});
+        try {
+            if(cursor!=null && cursor.getCount() ==1){
+                cursor.moveToFirst();
+                timeLine = cursor.getInt(0);
+            }
+        }catch (Exception e){
+            logger.e("DBInterface#getSessionLastTime cursor 查询异常");
+        }finally {
+            cursor.close();
+        }*/
+
+
+        return false;
     }
 
     /**
@@ -394,6 +460,7 @@ public class DBInterface {
             // mix消息
             return insertOrUpdateMix(message);
         }
+
         MessageDao dao = openWritableDb().getMessageDao();
         long pkId = dao.insertOrReplace(message);
         return pkId;
@@ -406,6 +473,17 @@ public class DBInterface {
     public void batchInsertOrUpdateMessage(List<MessageEntity> entityList){
         MessageDao dao = openWritableDb().getMessageDao();
         dao.insertOrReplaceInTx(entityList);
+    }
+
+    //根据会话id删除会话
+    public void deleteMessageBySessionKey(String session_key) {
+        if(TextUtils.isEmpty(session_key)){
+            return;
+        }else{
+            MessageDao dao = openWritableDb().getMessageDao();
+            int i = dao.getDatabase().delete("Message", "SESSION_KEY = ?", new String[]{session_key});
+            logger.d("删除后的id为:"+i);
+        }
     }
 
 

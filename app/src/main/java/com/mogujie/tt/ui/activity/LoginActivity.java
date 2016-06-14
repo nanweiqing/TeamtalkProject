@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
@@ -247,15 +248,21 @@ public class LoginActivity extends TTBaseActivity {
                 intputManager.hideSoftInputFromWindow(mPasswordView.getWindowToken(), 0);
                 attemptLogin();
 
-                /*String jsonTest = "{\"msgHeader\":{\"serviceCode\":\"IM003\",\"version\":\"1.0\",\"sysPlatCode\":\"1\",\"sentTime\":\"2016-05-29 09:54:02\",\"expTime\":\"\",\"sMessageNo\":\"BBS000201605290954020214\"},\"msgBody\":{\"userId\":\"2\",\"countNum\":\"4\",\"startNum\":\"1\",\"endNum\":\"49\",\"Datas\":[{\"refId\":\"2\",\"fUserId\":\"3\",\"fUserName\":\"w\",\"fNickName\":\"W\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"3\",\"fUserId\":\"4\",\"fUserName\":\"e\",\"fNickName\":\"E\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"4\",\"fUserId\":\"5\",\"fUserName\":\"r\",\"fNickName\":\"R\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"5\",\"fUserId\":\"6\",\"fUserName\":\"t\",\"fNickName\":\"T\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"6\",\"fUserId\":\"7\",\"fUserName\":\"y\",\"fNickName\":\"Y\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"7\",\"fUserId\":\"8\",\"fUserName\":\"u\",\"fNickName\":\"U\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"8\",\"fUserId\":\"9\",\"fUserName\":\"i\",\"fNickName\":\"I\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"9\",\"fUserId\":\"10\",\"fUserName\":\"o\",\"fNickName\":\"O\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"10\",\"fUserId\":\"11\",\"fUserName\":\"p\",\"fNickName\":\"P\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"11\",\"fUserId\":\"12\",\"fUserName\":\"l\",\"fNickName\":\"L\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"12\",\"fUserId\":\"13\",\"fUserName\":\"k\",\"fNickName\":\"K\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"13\",\"fUserId\":\"14\",\"fUserName\":\"j\",\"fNickName\":\"J\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"14\",\"fUserId\":\"15\",\"fUserName\":\"h\",\"fNickName\":\"H\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"15\",\"fUserId\":\"16\",\"fUserName\":\"g\",\"fNickName\":\"G\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"16\",\"fUserId\":\"17\",\"fUserName\":\"f\",\"fNickName\":\"F\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"17\",\"fUserId\":\"18\",\"fUserName\":\"d\",\"fNickName\":\"D\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"18\",\"fUserId\":\"19\",\"fUserName\":\"s\",\"fNickName\":\"S\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"}]}}";
-                GetFriendListResp getFriendListResp = new Gson().fromJson(jsonTest, GetFriendListResp.class);
-                GetFriendListRespBody getFriendListRespBody = getFriendListResp.getGetFriendListRespBody();
-                int i = getFriendListRespBody.getEndNum();
+//                getTest();
+
+
+
+                String jsonTest = "{\"msgHeader\":{\"serviceCode\":\"IM003\",\"version\":\"1.0\",\"sysPlatCode\":\"1\",\"sentTime\":\"2016-05-29 09:54:02\",\"expTime\":\"\",\"sMessageNo\":\"BBS000201605290954020214\"},\"msgBody\":{\"userId\":\"2\",\"countNum\":\"4\",\"startNum\":\"1\",\"endNum\":\"49\",\"Datas\":[{\"refId\":\"2\",\"fUserId\":\"3\",\"fUserName\":\"w\",\"fNickName\":\"W\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"3\",\"fUserId\":\"4\",\"fUserName\":\"e\",\"fNickName\":\"E\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"4\",\"fUserId\":\"5\",\"fUserName\":\"r\",\"fNickName\":\"R\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"5\",\"fUserId\":\"6\",\"fUserName\":\"t\",\"fNickName\":\"T\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"6\",\"fUserId\":\"7\",\"fUserName\":\"y\",\"fNickName\":\"Y\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"7\",\"fUserId\":\"8\",\"fUserName\":\"u\",\"fNickName\":\"U\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"8\",\"fUserId\":\"9\",\"fUserName\":\"i\",\"fNickName\":\"I\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"9\",\"fUserId\":\"10\",\"fUserName\":\"o\",\"fNickName\":\"O\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"10\",\"fUserId\":\"11\",\"fUserName\":\"p\",\"fNickName\":\"P\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"11\",\"fUserId\":\"12\",\"fUserName\":\"l\",\"fNickName\":\"L\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"12\",\"fUserId\":\"13\",\"fUserName\":\"k\",\"fNickName\":\"K\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"13\",\"fUserId\":\"14\",\"fUserName\":\"j\",\"fNickName\":\"J\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"14\",\"fUserId\":\"15\",\"fUserName\":\"h\",\"fNickName\":\"H\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"15\",\"fUserId\":\"16\",\"fUserName\":\"g\",\"fNickName\":\"G\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"16\",\"fUserId\":\"17\",\"fUserName\":\"f\",\"fNickName\":\"F\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"17\",\"fUserId\":\"18\",\"fUserName\":\"d\",\"fNickName\":\"D\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"},{\"refId\":\"18\",\"fUserId\":\"19\",\"fUserName\":\"s\",\"fNickName\":\"S\",\"fSignature\":\"null\",\"fUserIcon\":\"null\",\"fIntro\":\"null\",\"fCreateTime\":\"null\"}]}}";
+//                GetFriendListResp getFriendListResp = new Gson().fromJson(jsonTest, GetFriendListResp.class);
+//                GetFriendListRespBody getFriendListRespBody = getFriendListResp.getGetFriendListRespBody();
+
+
+                /*int i = getFriendListRespBody.getEndNum();
                 logger.d("响应成功,end值为:"+ i);
                 List<FriendDetailInfo> friendDetailInfoList = getFriendListRespBody.getDatas();
-                logger.d("响应成功,list为:"+ friendDetailInfoList.get(0).getfNickName());
+                logger.d("响应成功,list为:"+ friendDetailInfoList.get(0).getfNickName());*/
 
-                MsgHeader msgHeader = new MsgHeader("IM003","1.0","1","2016-05-29 09:54:02","",
+                /*MsgHeader msgHeader = new MsgHeader("IM003","1.0","1","2016-05-29 09:54:02","",
                         "BBS000201605290954020214");
                 GetFriendListReqBody getFriendListReqBody = new GetFriendListReqBody("1","1","50");
                 String body = new Gson().toJson(getFriendListReqBody).toString();
@@ -272,6 +279,11 @@ public class LoginActivity extends TTBaseActivity {
                 String exm = "{\"msgHeader\":"+header+",\"msgBody\":\""+b+"\"}";
                 logger.d("加密后的暗文为:"+exm);
 
+
+                String aaa = "BvinNq5QJVcX+/2AzuwUePiX7Q8xvEIjj5vcMW9ciH4cxmpy4o4l7MBftBcjUIObv2ph2cnCjdcqETAyTeNghfj+gXeJEoRTnJuEUp92kgozjDbW6mMJl0972QWsWlTSwOMoDBZCFM/NYZPvOgzQq05y63ERxaaV3PxV9A3FVyv+jAS/5SEmbwN4fmJprij9EqUJhjJT2i6q6smISXbqLIw0zU+3JrNtDMedj0Qu4fB3x0FJtnvHzfdgFy/3XUy9bfXvZ1Sis7qw2/4sMzqYMtJaivGYsdddv6cqiH8e9H9knsqVfPiUsorHqMc1osF0mcqGIxQ5mRlnvpCsrqX/3404LlS3ei9QLeUczoMzcpp/wU+o2pZ+H2NOtLqCrpFKAcueMlpWvqjzWF+Wre8t4x9ZtriHGnfeH05O6BJbJKz0wNheysRYJV5RntsDlvEsJQ9TU/Rzyhmr+Rj4HYUQnUDU7RwEXPd+YmBaBEtUSvBjPW34V/jcwYBMEZSvlck=";
+                String a = EncryUtil.decrypt(aaa, SysConstant.key);
+                logger.d("解密后的明文为:"+ a);
+
                 try {
                     OkHttpUtils.postString().url(UrlConstant.URL_HOST_ADDRESS)
                             .content(exm).build().execute(new MyStringCallback());
@@ -281,6 +293,19 @@ public class LoginActivity extends TTBaseActivity {
             }
         });
         initAutoLogin();
+    }
+
+    public void getTest(){
+        TelephonyManager tm = (TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
+        String deviceId = tm.getDeviceId();
+        logger.i("DEVICE_ID ", deviceId + " ");
+
+
+        String androidId = android.provider.Settings.System.getString(getContentResolver(), android.provider.Settings.System.ANDROID_ID);
+        logger.i("ANDROID_ID", androidId + " ");
+
+        mNameView.setText("deviceID:"+deviceId+",androidId:"+androidId);
+
     }
 
 
@@ -314,7 +339,10 @@ public class LoginActivity extends TTBaseActivity {
 //            String a = {"msgHeader":{"serviceCode":"IM003","version":"1.0","sysPlatCode":"BBS","sentTime":"2016-05-2909:54:02","expTime":"","sMessageNo":"BBS000201605290954020214"},"msgBody":{"userId":"IM0032016052415501119422","countNum":"2","startNum":"1","endNum":"50","Datas":[{"refId":"000000111","fUserId":"122222","fUserName":"1","fNickName":"成功","fSignature":"0000001","fUserIcon":"1","fIntro":"123成功","fCreateTime":"2016-05-2410:33:45"},{"refId":"000000112","fUserId":"2222212","fUserName":"1","fNickName":"aa","fSignature":"0000001","fUserIcon":"1","fIntro":"a","fCreateTime":"2016-05-2410:33:45"}]}}
 
             GetFriendListResp getFriendListResp = new Gson().fromJson(response, GetFriendListResp.class);
-            GetFriendListRespBody getFriendListRespBody = getFriendListResp.getGetFriendListRespBody();
+//            GetFriendListRespBody getFriendListRespBody = getFriendListResp.getGetFriendListRespBody();
+            String encryedBody = getFriendListResp.getGetFriendListRespBody();
+            String decryBody = EncryUtil.decrypt(encryedBody, SysConstant.key);
+            GetFriendListRespBody getFriendListRespBody = new Gson().fromJson(decryBody, GetFriendListRespBody.class);
             int i = getFriendListRespBody.getEndNum();
             logger.d("响应成功,end值为:"+ i);
             List<FriendDetailInfo> friendDetailInfoList = getFriendListRespBody.getDatas();

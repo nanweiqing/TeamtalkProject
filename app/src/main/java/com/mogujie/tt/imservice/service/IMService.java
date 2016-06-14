@@ -70,14 +70,14 @@ public class IMService extends Service {
 
 	@Override
 	public void onCreate() {
-		logger.i("IMService onCreate");
-		super.onCreate();
+        logger.i("IMService onCreate");
+        super.onCreate();
         EventBus.getDefault().register(this, SysConstant.SERVICE_EVENTBUS_PRIORITY);
-		// make the service foreground, so stop "360 yi jian qingli"(a clean
-		// tool) to stop our app
-		// todo eric study wechat's mechanism, use a better solution
-		startForeground((int) System.currentTimeMillis(), new Notification());
-	}
+        // make the service foreground, so stop "360 yi jian qingli"(a clean
+        // tool) to stop our app
+        // todo eric study wechat's mechanism, use a better solution
+        startForeground((int) System.currentTimeMillis(), new Notification());
+    }
 
 	@Override
 	public void onDestroy() {

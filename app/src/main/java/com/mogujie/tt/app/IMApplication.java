@@ -2,6 +2,7 @@ package com.mogujie.tt.app;
 
 import android.app.Application;
 import android.content.Intent;
+import android.support.multidex.MultiDexApplication;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 
 
-public class IMApplication extends Application {
+public class IMApplication extends MultiDexApplication {
 
 	private Logger logger = Logger.getLogger(IMApplication.class);
 
@@ -35,7 +36,10 @@ public class IMApplication extends Application {
 		ImageLoaderUtil.initImageLoaderConfig(getApplicationContext());
 
 //		LeakCanary.install(this);
+		initOkHttp();
+	}
 
+	private void initOkHttp() {
 		OkHttpClient okHttpClient = new OkHttpClient.Builder()
 //                .addInterceptor(new LoggerInterceptor("TAG"))
 				.connectTimeout(10000L, TimeUnit.MILLISECONDS)
@@ -44,7 +48,6 @@ public class IMApplication extends Application {
 				.build();
 
 		OkHttpUtils.initClient(okHttpClient);
-
 	}
 
 	private void startIMService() {

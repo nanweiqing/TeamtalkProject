@@ -472,6 +472,14 @@ public class IMMessageManager extends IMManager{
     }
 
     /**
+     * 根据会话Session_Key删除消息记录
+     */
+    private void deleteMessageBySessionKey(String SessionKey) {
+        String sql = "delete * from Message where SESSION_KEY = ?";
+
+    }
+
+    /**
      * asyn task
      * 因为是多端同步，本地信息并不一定完成，拉取时提前异步检测
      * */

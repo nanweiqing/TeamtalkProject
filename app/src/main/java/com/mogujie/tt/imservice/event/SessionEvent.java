@@ -14,7 +14,11 @@ public enum  SessionEvent {
 
    SET_SESSION_TOP,
 
-   //回话人列表加载更多
-   RECENT_SESSION_LIST_MORE
+   //最近会话列表上拉加载更多
+   RECENT_SESSION_LIST_MORE,
+
+   //最近会话列表下拉刷新
+   RECENT_SESSION_LIST_PULL_DOWN,
+
 
 }

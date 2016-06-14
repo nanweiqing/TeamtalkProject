@@ -15,6 +15,7 @@ public class SessionEntity {
     /** Not-null value. */
     private String sessionKey;
     private int peerId;
+    //代表会话类型，是群还是个人
     private int peerType;
     private int latestMsgType;
     private int latestMsgId;

@@ -940,9 +940,16 @@ public class MessageActivity extends TTBaseActivity
             }
             break;
             case R.id.hongbao_btn:
-                Intent intent = new Intent(MessageActivity.this, HongbaoActivity.class);
+                /*Intent intent = new Intent(MessageActivity.this, HongbaoActivity.class);
                 intent.putExtra(IntentConstant.KEY_SESSION_KEY, currentSessionKey);
-                startActivityForResult(intent, SysConstant.HONGBAO_WITH_DATA);
+                startActivityForResult(intent, SysConstant.HONGBAO_WITH_DATA);*/
+
+                /*DBInterface dbInterface = DBInterface.instance();
+                int loginId = IMLoginManager.instance().getLoginId();
+                dbInterface.exitGroup(loginId);*/
+
+                DBInterface dbInterface = DBInterface.instance();
+                dbInterface.deleteMessageBySessionKey("2ss");
                 break;
             case R.id.show_emo_btn: {
                 /**yingmu 调整成键盘输出*/

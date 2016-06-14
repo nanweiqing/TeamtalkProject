@@ -15,6 +15,7 @@ import com.mogujie.tt.DB.sp.ConfigurationSp;
 import com.mogujie.tt.config.SysConstant;
 import com.mogujie.tt.imservice.entity.RecentInfo;
 import com.mogujie.tt.imservice.entity.UnreadEntity;
+import com.mogujie.tt.imservice.event.SessionDeleteEvent;
 import com.mogujie.tt.imservice.event.SessionEvent;
 import com.mogujie.tt.protobuf.helper.EntityChangeEngine;
 import com.mogujie.tt.protobuf.helper.Java2ProtoBuf;
@@ -91,6 +92,9 @@ public class IMSessionManager extends IMManager {
         }
         EventBus.getDefault().post(event);
     }
+    public void triggerEvent(SessionDeleteEvent event) {
+        EventBus.getDefault().post(event);
+    }
 
     public void onNormalLoginOk() {
         logger.d("recent#onLogin Successful");
@@ -164,9 +168,31 @@ public class IMSessionManager extends IMManager {
         for(IMBaseDefine.ContactSessionInfo sessionInfo:contactSessionInfoList){
             // 返回的没有主键Id
             SessionEntity sessionEntity = ProtoBuf2JavaBean.getSessionEntity(sessionInfo);
-            //并没有按照时间来排序
+
+            //Todo,判断我加入群里的方式(是否是通过加红包进入)
             sessionMap.put(sessionEntity.getSessionKey(), sessionEntity);
             needDb.add(sessionEntity);
+
+            //下拉刷新得到新的会话时，如果是群组，则应该插入到GroupInfo表中,是人,则应该插入到UserInfo表中
+            if(sessionEntity.getPeerType() == DBConstant.SESSION_TYPE_GROUP){
+                dbInterface.insertOrUpdateGroup(new GroupEntity());
+            }
+
+            //当最近会话类型为群时，此时要做退群判断，最近会话类型为个人时不需要判断
+            /*if(sessionEntity.getPeerType() == DBConstant.SESSION_TYPE_GROUP){
+                //Todo,当前时间与我发的最后一条消息的时间进行对比，做退群判断
+                if((System.currentTimeMillis() - sessionEntity.getCreated()) >= 60*60*1000){
+                    terminateRelation(sessionEntity.getSessionKey());
+                }else{
+                    //并没有按照时间来排序
+                    sessionMap.put(sessionEntity.getSessionKey(), sessionEntity);
+                    needDb.add(sessionEntity);
+                }
+            }else if(sessionEntity.getPeerType() == DBConstant.SESSION_TYPE_SINGLE){
+                //并没有按照时间来排序
+                sessionMap.put(sessionEntity.getSessionKey(), sessionEntity);
+                needDb.add(sessionEntity);
+            }*/
         }
         logger.d("session#onRepRecentContacts is ready,now broadcast");
 
@@ -174,7 +200,33 @@ public class IMSessionManager extends IMManager {
         dbInterface.batchInsertOrUpdateSession(needDb);
         if(needDb.size()>0){
             triggerEvent(SessionEvent.RECENT_SESSION_LIST_UPDATE);
+        }else{
+            //当下拉刷新或者第一次进入应用没拉到数据时
+            triggerEvent(SessionEvent.RECENT_SESSION_LIST_PULL_DOWN);
         }
+    }
+
+    /**
+     * 判断是否满足解除群关系条件
+     * 1.加入群的方式(是否是通过领红包加入)
+     * 2.多久未发言(领红包加入7天没说话解除关系，非领取红包加入60分钟不说话解除关系)
+     */
+    public void  terminateRelation(String sessionKey){
+        /**Todo，如果最后发言时间超过60分钟，解除我和此群关系
+         *删除消息记录里 关于此群的信息，删除groupInfo里关于此群的信息
+         * 先发送删除会话的
+         * */
+        int loginId = imLoginManager.getLoginId();
+        dbInterface.deleteMessageBySessionKey(sessionKey);
+        int peerId = dbInterface.getPeerIdBySessionKey(sessionKey);
+        dbInterface.deleteGroupByPeerId(peerId);
+        dbInterface.deleteSession(sessionKey);
+        IMUnreadMsgManager.instance().readUnreadSession(sessionKey);
+        ConfigurationSp.instance(ctx,loginId).setSessionTop(sessionKey,false);
+        if(sessionMap.containsKey(sessionKey)){
+            sessionMap.remove(sessionKey);
+        }
+
     }
 
     /**
@@ -191,7 +243,9 @@ public class IMSessionManager extends IMManager {
             IMUnreadMsgManager.instance().readUnreadSession(sessionKey);
             dbInterface.deleteSession(sessionKey);
             ConfigurationSp.instance(ctx,loginId).setSessionTop(sessionKey,false);
-            triggerEvent(SessionEvent.RECENT_SESSION_LIST_UPDATE);
+            //以前的做法
+//            triggerEvent(SessionEvent.RECENT_SESSION_LIST_UPDATE);
+            triggerEvent(new SessionDeleteEvent(recentInfo));
         }
 
         IMBuddy.IMRemoveSessionReq removeSessionReq = IMBuddy.IMRemoveSessionReq
