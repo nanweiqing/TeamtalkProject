@@ -1,2 +1,1 @@
-include ':mgimlibs', ':daogenerator', ':okhttputils', ':ptr-lib'
-include ':app'
+0
